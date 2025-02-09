@@ -20,6 +20,9 @@ from config import (
     START_MSG,
     CUSTOM_CAPTION,
     IS_VERIFY,
+    FORCE_CHANNEL,
+    FORCE_CHANNEL2,
+    REQUEST_CHANNEL,
     VERIFY_EXPIRE,
     SHORTLINK_API,
     SHORTLINK_URL,
@@ -27,9 +30,10 @@ from config import (
     PROTECT_CONTENT,
     TUT_VID,
     OWNER_ID,
+    FORCE_PIC,
 )
 from helper_func import subscribed, encode, decode, get_messages, get_shortlink, get_verify_status, update_verify_status, get_exp_time
-from database.database import add_user, del_user, full_userbase, present_user
+from database.database import add_user, del_user, full_userbase, present_user, is_requested_one, delete_all_one
 from shortzy import Shortzy
 
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
@@ -141,7 +145,7 @@ async def start_command(client: Client, message: Message):
             verify_status = await get_verify_status(id)
             if IS_VERIFY and not verify_status['is_verified']:
                 short_url = f"api.shareus.io"
-                full_tut_url = f"https://t.me/How_to_download_tutorial_idk/2"
+                full_tut_url = f"https://t.me/All_Movie_Star_Link"
                 token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
                 await update_verify_status(id, verify_token=token, link="")
                 link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API,f'https://telegram.dog/{client.username}?start=verify_{token}')
@@ -168,40 +172,42 @@ REPLY_ERROR = """<code>Use this command as a replay to any telegram message with
     
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
-    buttons = [
-        [
-            InlineKeyboardButton(
-                "Join Channel",
-                url = client.invitelink),
-            InlineKeyboardButton(
-                "Join Channel",
-                url = client.invitelink2),
-        ]
-    ]
-    try:
-        buttons.append(
-            [
-                InlineKeyboardButton(
-                    text = 'Try Again',
-                    url = f"https://t.me/{client.username}?start={message.command[1]}"
-                )
-            ]
-        )
-    except IndexError:
-        pass
+    btn = []
+    if FORCE_CHANNEL:
+        btn.append(InlineKeyboardButton("ᴊᴏɪɴ 1", url=client.invitelink))
+    if FORCE_CHANNEL2:
+        btn.append(InlineKeyboardButton("ᴊᴏɪɴ 2", url=client.invitelink2))
+    if REQUEST_CHANNEL:
+        btn.append(InlineKeyboardButton("ᴊᴏɪɴ 3", url=client.link_one))
 
-    await message.reply(
-        text = FORCE_MSG.format(
-                first = message.from_user.first_name,
-                last = message.from_user.last_name,
-                username = None if not message.from_user.username else '@' + message.from_user.username,
-                mention = message.from_user.mention,
-                id = message.from_user.id
-            ),
-        reply_markup = InlineKeyboardMarkup(buttons),
-        quote = True,
-        disable_web_page_preview = True
+    
+    if len(btn) == 2:
+        btn_markup = [btn]
+    else:
+        btn_markup = [btn[:2], btn[2:]]
+
+    
+    if len(message.command) > 1 and client.username:
+        btn_markup.append([
+            InlineKeyboardButton(
+                text='Try Again',
+                url=f"https://t.me/{client.username}?start={message.command[1]}"
+            )
+        ])
+
+    await message.reply_photo(
+        photo=FORCE_PIC,
+        caption=FORCE_MSG.format(
+            first=message.from_user.first_name,
+            last=message.from_user.last_name,
+            username=None if not message.from_user.username else '@' + message.from_user.username,
+            mention=message.from_user.mention,
+            id=message.from_user.id),
+        reply_markup=InlineKeyboardMarkup(inline_keyboard=btn_markup)
     )
+    return
+    
+
 
 @Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
 async def get_users(client: Bot, message: Message):
