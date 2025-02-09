@@ -1,73 +1,48 @@
-#(©)NextGenBotz
-#import logging
 import base64
 import re
 import asyncio
-from pyrogram import filters
+from pyrogram import Client, filters
 from pyrogram.enums import ChatMemberStatus
-from config import FORCE_SUB_CHANNEL, FORCE_SUB_CHANNEL2, ADMINS
+from config import ADMINS, FORCE_CHANNEL, FORCE_CHANNEL2
 from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant
 from pyrogram.errors import FloodWait
 from shortzy import Shortzy
-import requests
-import time
+from database.database import is_requested_one, db_verify_status, db_update_verify_status
 from datetime import datetime
-from database.database import user_data, db_verify_status, db_update_verify_status
-
-#logger = logging.getLogger(__name__)
-#logger.setLevel(logging.INFO)
 
 async def is_subscribed(filter, client, update):
-    if not FORCE_SUB_CHANNEL:
+    if not FORCE_CHANNEL and not FORCE_CHANNEL2:
         return True
+
     user_id = update.from_user.id
     if user_id in ADMINS:
         return True
-    try:
-        member = await client.get_chat_member(chat_id = FORCE_SUB_CHANNEL, user_id = user_id)
-    except UserNotParticipant:
+
+    if client.link_one is not None and user_id not in ADMINS and not await is_requested_one(update):
         return False
 
-    if not member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
-        return False
-    else:
-        return True
+    # Check subscription status for FORCE_CHANNEL
+    if FORCE_CHANNEL:
+        try:
+            member = await client.get_chat_member(chat_id=FORCE_CHANNEL, user_id=user_id)
+            if member.status not in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
+                return False
+        except UserNotParticipant:
+            return False
+    
+    # Check subscription status for FORCE_CHANNEL2
+    if FORCE_CHANNEL2:
+        try:
+            member2 = await client.get_chat_member(chat_id=FORCE_CHANNEL2, user_id=user_id)
+            if member2.status not in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
+                return False
+        except UserNotParticipant:
+            return False
 
-async def is_subscribed(filter, client, update):
-    if not FORCE_SUB_CHANNEL2:
-        return True
-    user_id = update.from_user.id
-    if user_id in ADMINS:
-        return True
-    try:
-        member = await client.get_chat_member(chat_id = FORCE_SUB_CHANNEL2, user_id = user_id)
-    except UserNotParticipant:
-        return False
-    if not member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
-        return False
-    else:
-        return True
-async def is_subscribed(filter, client, update):
-    if not FORCE_SUB_CHANNEL:
-        return True
-    if not FORCE_SUB_CHANNEL2:
-        return True
-    user_id = update.from_user.id
-    if user_id in ADMINS:
-        return True
-    try:
-        member = await client.get_chat_member(chat_id = FORCE_SUB_CHANNEL, user_id = user_id)
-    except UserNotParticipant:
-        return False
-    if not member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.MEMBER]:
-        return False
-    try:
-        member = await client.get_chat_member(chat_id = FORCE_SUB_CHANNEL2, user_id = user_id)
-    except UserNotParticipant:
-        return False
-    else:
-        return True
-        
+    return True
+
+
+
 async def encode(string):
     string_bytes = string.encode("ascii")
     base64_bytes = base64.urlsafe_b64encode(string_bytes)
@@ -75,31 +50,24 @@ async def encode(string):
     return base64_string
 
 async def decode(base64_string):
-    base64_string = base64_string.strip("=") # links generated before this commit will be having = sign, hence striping them to handle padding errors.
+    base64_string = base64_string.strip("=")
     base64_bytes = (base64_string + "=" * (-len(base64_string) % 4)).encode("ascii")
-    string_bytes = base64.urlsafe_b64decode(base64_bytes) 
-    string = string_bytes.decode("ascii")
-    return string
+    string_bytes = base64.urlsafe_b64decode(base64_bytes)
+    return string_bytes.decode("ascii")
 
 async def get_messages(client, message_ids):
     messages = []
     total_messages = 0
     while total_messages != len(message_ids):
-        temb_ids = message_ids[total_messages:total_messages+200]
+        temp_ids = message_ids[total_messages:total_messages + 200]
         try:
-            msgs = await client.get_messages(
-                chat_id=client.db_channel.id,
-                message_ids=temb_ids
-            )
+            msgs = await client.get_messages(chat_id=client.db_channel.id, message_ids=temp_ids)
         except FloodWait as e:
             await asyncio.sleep(e.x)
-            msgs = await client.get_messages(
-                chat_id=client.db_channel.id,
-                message_ids=temb_ids
-            )
-        except:
+            msgs = await client.get_messages(chat_id=client.db_channel.id, message_ids=temp_ids)
+        except Exception as e:
             pass
-        total_messages += len(temb_ids)
+        total_messages += len(temp_ids)
         messages.extend(msgs)
     return messages
 
@@ -112,8 +80,8 @@ async def get_message_id(client, message):
     elif message.forward_sender_name:
         return 0
     elif message.text:
-        pattern = "https://t.me/(?:c/)?(.*)/(\d+)"
-        matches = re.match(pattern,message.text)
+        pattern = r"https://t.me/(?:c/)?(.*)/(\d+)"
+        matches = re.match(pattern, message.text)
         if not matches:
             return 0
         channel_id = matches.group(1)
@@ -124,12 +92,10 @@ async def get_message_id(client, message):
         else:
             if channel_id == client.db_channel.username:
                 return msg_id
-    else:
-        return 0
+    return 0
 
 async def get_verify_status(user_id):
-    verify = await db_verify_status(user_id)
-    return verify
+    return await db_verify_status(user_id)
 
 async def update_verify_status(user_id, verify_token="", is_verified=False, verified_time=0, link=""):
     current = await db_verify_status(user_id)
@@ -139,11 +105,9 @@ async def update_verify_status(user_id, verify_token="", is_verified=False, veri
     current['link'] = link
     await db_update_verify_status(user_id, current)
 
-
 async def get_shortlink(url, api, link):
     shortzy = Shortzy(api_key=api, base_site=url)
-    link = await shortzy.convert(link)
-    return link
+    return await shortzy.convert(link)
 
 def get_exp_time(seconds):
     periods = [('days', 86400), ('hours', 3600), ('mins', 60), ('secs', 1)]
@@ -153,7 +117,6 @@ def get_exp_time(seconds):
             period_value, seconds = divmod(seconds, period_seconds)
             result += f'{int(period_value)}{period_name}'
     return result
-
 
 def get_readable_time(seconds: int) -> str:
     count = 0
@@ -175,6 +138,5 @@ def get_readable_time(seconds: int) -> str:
     time_list.reverse()
     up_time += ":".join(time_list)
     return up_time
-
 
 subscribed = filters.create(is_subscribed)
