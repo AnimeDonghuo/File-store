@@ -39,9 +39,9 @@ TUT_VID = os.environ.get("TUT_VID","https://t.me/Mrstrangemovie/21")
 
 
 #force sub channel id, if you want enable force sub
-FORCE_CHANNEL = int(os.environ.get("FORCE_CHANNEL", ""))
-FORCE_CHANNEL2 = int(os.environ.get("FORCE_CHANNEL2", "-1002261625892"))
-REQUEST_CHANNEL = int(os.environ.get("REQUEST_CHANNEL", "-1002474758468"))
+FORCE_CHANNEL = int(os.environ.get("FORCE_CHANNEL", "-1002357822394"))
+FORCE_CHANNEL2 = int(os.environ.get("FORCE_CHANNEL2", "-1002213098381"))
+REQUEST_CHANNEL = int(os.environ.get("REQUEST_CHANNEL", "-1001853597187"))
 
 TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "4"))
 
@@ -49,7 +49,7 @@ TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "4"))
 START_MSG = os.environ.get("START_MESSAGE", "<b>👋👋 Hey {first} ! </b>\n\n<b> 𝐈'𝐦 𝐚 𝐅𝐢𝐥𝐞 𝐒𝐭𝐨𝐫𝐞 𝐁𝐨𝐭🤖...! </b>\n\n 𝐈 𝐂𝐚𝐧 <b> 𝐒𝐭𝐨𝐫𝐞 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 𝐅𝐢𝐥𝐞𝐬</b>  𝐢𝐧 𝐒𝐩𝐞𝐜𝐢𝐟𝐢𝐞𝐝 𝐂𝐡𝐚𝐧𝐧𝐞𝐥 𝐚𝐧𝐝 𝐨𝐭𝐡𝐞𝐫 𝐮𝐬𝐞𝐫𝐬 𝐜𝐚𝐧 𝐚𝐜𝐜𝐞𝐬𝐬 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 𝐅𝐢𝐥𝐞𝐬 𝐅𝐫𝐨𝐦 𝐚 𝐒𝐩𝐞𝐜𝐢𝐚𝐥 𝐋𝐢𝐧𝐤....!\n\n⚡<b> 𝐏𝐨𝐰𝐞𝐫𝐞𝐝 𝐁𝐲 - </b>❝𝐌𝐨𝐯𝐢𝐞 𝐒𝐭𝐚𝐫❞")
 try:
     ADMINS=[]
-    for x in (os.environ.get("ADMINS", "7987708794").split()):
+    for x in (os.environ.get("ADMINS", "1685470205 5212197608").split()):
         ADMINS.append(int(x))
 except ValueError:
         raise Exception("Your Admins list does not contain valid integers.")
