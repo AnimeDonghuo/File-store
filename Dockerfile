@@ -1,9 +1,12 @@
-FROM python:3.8-slim-buster
+FROM python:3.9-slim
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+# Copy application code
+COPY . /app
 WORKDIR /app
 
-COPY requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
-
-COPY . .
-EXPOSE 8080
-CMD python3 main.py
+# Run the application
+CMD ["python", "main.py"]
