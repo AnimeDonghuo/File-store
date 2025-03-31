@@ -10,7 +10,7 @@ from logging.handlers import RotatingFileHandler
 
 
 #Bot token @Botfather
-TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "7883089544:AAFTaRV7nFoHKadCQCWPiLiQQy74b53Pxc8")
+TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "")
 
 #Your API ID from my.telegram.org
 APP_ID = int(os.environ.get("APP_ID", "9102574"))
@@ -19,16 +19,16 @@ APP_ID = int(os.environ.get("APP_ID", "9102574"))
 API_HASH = os.environ.get("API_HASH", "0861a545777adba2d599304b6474aad1")
 
 #Your db channel Id
-CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1002326271245"))
+CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1002642523721"))
 
 #OWNER ID
-OWNER_ID = int(os.environ.get("OWNER_ID", "7987708794"))
+OWNER_ID = int(os.environ.get("OWNER_ID", "5053078995"))
 
 #Port
 PORT = os.environ.get("PORT", "8080")
 
 #Database 
-DB_URI = "mongodb+srv://wefovip491:Ft62iNRgmhIsf2NN@privatevideos.arurz.mongodb.net/?retryWrites=true&w=majority&appName=privatevideos"
+DB_URI = "mongodb+srv://nitesh:Ayush@cluster0.k1zk9.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 DB_NAME = os.environ.get("DATABASE_NAME", "cluster0")
 
 SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "shortner.in")
