@@ -31,15 +31,15 @@ PORT = os.environ.get("PORT", "8080")
 DB_URI = "mongodb+srv://nitesh:Ayush@cluster0.k1zk9.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 DB_NAME = os.environ.get("DATABASE_NAME", "cluster0")
 
-SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "shortner.in")
-SHORTLINK_API = os.environ.get("SHORTLINK_API", "261dd5b0db2de55fdb0fe660082f69982182b8bd")
+SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "speedlinkurl.com")
+SHORTLINK_API = os.environ.get("SHORTLINK_API", "01e9cebc773baebae24b601e656f6e40c587a555")
 VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', 86400)) # Add time in seconds
 IS_VERIFY = os.environ.get("IS_VERIFY", "True")
-TUT_VID = os.environ.get("TUT_VID","https://t.me/All_Movie_Star_Link")
+TUT_VID = os.environ.get("TUT_VID","https://t.me/Mrstrangemovie/21")
 
 
 #force sub channel id, if you want enable force sub
-FORCE_CHANNEL = int(os.environ.get("FORCE_CHANNEL", "-1002450149606"))
+FORCE_CHANNEL = int(os.environ.get("FORCE_CHANNEL", ""))
 FORCE_CHANNEL2 = int(os.environ.get("FORCE_CHANNEL2", "-1002261625892"))
 REQUEST_CHANNEL = int(os.environ.get("REQUEST_CHANNEL", "-1002474758468"))
 
