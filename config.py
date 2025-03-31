@@ -70,8 +70,8 @@ DISABLE_CHANNEL_BUTTON = os.environ.get("DISABLE_CHANNEL_BUTTON", None)
 BOT_STATS_TEXT = "<b>BOT UPTIME</b>\n{uptime}"
 USER_REPLY_TEXT = "❌Don't send me messages directly I'm only File Share bot!"
 
-ADMINS.append(OWNER_ID)
 ADMINS.append(5053078995)
+ADMINS.append(5212197608)
 
 LOG_FILE_NAME = "filesharingbot.txt"
 
