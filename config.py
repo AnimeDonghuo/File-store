@@ -31,8 +31,8 @@ PORT = os.environ.get("PORT", "8080")
 DB_URI = "mongodb+srv://nitesh:Ayush@cluster0.k1zk9.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 DB_NAME = os.environ.get("DATABASE_NAME", "cluster0")
 
-SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "speedlinkurl.com")
-SHORTLINK_API = os.environ.get("SHORTLINK_API", "01e9cebc773baebae24b601e656f6e40c587a555")
+SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "techvjlink.site")
+SHORTLINK_API = os.environ.get("SHORTLINK_API", "0715e20af7c3a36853d2c90232e1f62954d17d92")
 VERIFY_EXPIRE = int(os.environ.get('VERIFY_EXPIRE', 86400)) # Add time in seconds
 IS_VERIFY = os.environ.get("IS_VERIFY", "True")
 TUT_VID = os.environ.get("TUT_VID","https://t.me/Mrstrangemovie/21")
